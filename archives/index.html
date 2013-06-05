@@ -85,6 +85,58 @@
 
 
   
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2012-05-16T04:31:21.000Z"><a href="/2012/05/16/why-a-technical-company-should-have-a-technical-blog/">May 16 2012</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2012/05/16/why-a-technical-company-should-have-a-technical-blog/">Why a Technical Company Should Have a Technical Blog</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>When trying to investigate problems on our production servers at Amadeus we usually have to glob across thousands of gzip’d logs in a directory, being in devops I don’t know  the intricate details of the hardware where our logs are kept but as far as I know they are stored on various types of  EMC storage arrays connected via fiber cards. usually it takes a few seconds for a normal ls glob listing but today the command just seem to stall, first thing I do in GNU/Linux when a command stalls is to strace. A quick strace displays a set of slow moving set of getdents64() system calls.</p>
+<figure class="highlight lang-bash"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>getdents64(3, /* 662 entries */, 32768) = 32768  etc..
+</pre></td></tr></table></figure>
+
+
+
+<p>A quick man getdents64 returns, (getdents – get directory entries), ok so this directory is filled with thousands (or millions) of log files but I have no way to prove that since any command will most likely rely on using getdents64() which takes forever. A quick google search leads me to the blog from a startup that provides Live chat messaging to any website Olark.com.</p>
+<p>Here one of their engineers (Ben) displays exactly why this slowdown occurs with ls, getdents reads 32k of entries at a time which requires a multitude of calls before displaying the complete listing to stdout. Ben also provides a patch to the original getdents source displayed in the man page. This is what makes Linux and other *nix variants so great as you have the source to verify and quickly resolve a problem. After I compiled the patch and executed,  wala!  instant listing to display a measly</p>
+<figure class="highlight lang-bash"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>rchery@logserver:/log/PRD/log_archive $ ~/listdir | wc -l
+232613
+</pre></td></tr></table></figure>
+
+
+<p>232613 files. No where near the 8 million Olark dealt with but in effect lead me to blame the storage array as being laggy and not the actual file system being filled with millions of files. So in the world of the internet filled with the likes of Stackexchange.com, IRC etc.. the resolution came from an Olark blog. Now when I get my startup off the ground, I will definitely be choosing Olark for my messaging needs since their engineers clearly know what they are doing.</p>
+
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2012/05/16/why-a-technical-company-should-have-a-technical-blog/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  
 
   <nav id="pagination">
   
@@ -103,6 +155,15 @@
   
 
   
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Linux/">Linux</a><small>1</small></li>
+  
+  </ul>
+</div>
+
 
   
 
